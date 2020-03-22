@@ -16,44 +16,38 @@ object MessageController {
 
   case class MessageRequest(from: String, text: String, location: Location)
 
-  case class MessageResponse(id: UUID,
-                             from: String,
-                             text: String,
-                             location: Location,
-                             created: LocalDateTime)
+  case class MessageResponse(id: UUID, from: String, text: String, location: Location, created: LocalDateTime)
 
   case class MessagesResponse(messages: Seq[MessageResponse])
 
 }
 
 class MessageController @Inject()(
-  val controllerComponents: ControllerComponents,
-  service: MessageService
-)(implicit ec: ExecutionContext)
+                                   val controllerComponents: ControllerComponents,
+                                   service: MessageService
+                                 )(implicit ec: ExecutionContext)
     extends BaseController
     with MessageJsonFormats {
 
-  def getMessages: Action[AnyContent] = Action.async {
-    implicit request: Request[AnyContent] =>
-      val res = service.getMessages
-        .map(msgs => MessagesResponse(msgs.messages.map(messageResponseMapper)))
-        .map(msgs => Ok(Json.toJson(msgs)))
+  def getMessages: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+    val res = service.getMessages
+      .map(msgs => MessagesResponse(msgs.messages.map(messageResponseMapper)))
+      .map(msgs => Ok(Json.toJson(msgs)))
 
-      res
+    res
   }
 
-  def saveMessage(): Action[JsValue] = Action.async(parse.json) {
-    implicit request: Request[JsValue] =>
-      request.body
-        .validate[MessageRequest]
-        .asOpt
-        .map { msg =>
-          for {
-            _ <- service.saveMessage(msg)
-            res <- Future.successful(Created("Message created"))
-          } yield res
-        }
-        .getOrElse(Future.successful(BadRequest("Invalid message")))
+  def saveMessage(): Action[JsValue] = Action.async(parse.json) { implicit request: Request[JsValue] =>
+    request.body
+      .validate[MessageRequest]
+      .asOpt
+      .map { msg =>
+        for {
+          _ <- service.saveMessage(msg)
+          res <- Future.successful(Created("Message created"))
+        } yield res
+      }
+      .getOrElse(Future.successful(BadRequest("Invalid message")))
   }
 
   private def messageResponseMapper(message: Message): MessageResponse =
