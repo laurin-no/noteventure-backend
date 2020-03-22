@@ -25,7 +25,7 @@ class MessageRepository {
   }
 
   def saveMessage(message: Message): Future[Unit] = {
-    msgStoreStub :+ message
+    msgStoreStub = msgStoreStub :+ message
     Future.successful(())
   }
 

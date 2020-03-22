@@ -3,4 +3,5 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-GET        /messages        controllers.MessageController.getMessages
+GET         /messages        controllers.MessageController.getMessages
+POST        /messages        controllers.MessageController.saveMessage
