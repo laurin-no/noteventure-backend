@@ -14,12 +14,6 @@ trait MessageJsonFormats {
       (__ \ "coordinates").read[Coordinates]
   )(Location)
 
-//  implicit val messageRequestReads: Reads[MessageRequest] = (
-//    (__ \ "from").read[String] ~
-//      (__ \ "text").read[String] ~
-//      (__ \ "location").read[Location]
-//  )(MessageRequest)
-
   implicit val messageRequestReads: Reads[MessageRequest] =
     Json.reads[MessageRequest]
 

@@ -16,16 +16,22 @@ object MessageController {
 
   case class MessageRequest(from: String, text: String, location: Location)
 
-  case class MessageResponse(id: UUID, from: String, text: String, location: Location, created: LocalDateTime)
+  case class MessageResponse(
+      id: UUID,
+      from: String,
+      text: String,
+      location: Location,
+      created: LocalDateTime
+  )
 
   case class MessagesResponse(messages: Seq[MessageResponse])
 
 }
 
 class MessageController @Inject()(
-                                   val controllerComponents: ControllerComponents,
-                                   service: MessageService
-                                 )(implicit ec: ExecutionContext)
+    val controllerComponents: ControllerComponents,
+    service: MessageService
+)(implicit ec: ExecutionContext)
     extends BaseController
     with MessageJsonFormats {
 
@@ -43,7 +49,7 @@ class MessageController @Inject()(
       .asOpt
       .map { msg =>
         for {
-          _ <- service.saveMessage(msg)
+          _   <- service.saveMessage(msg)
           res <- Future.successful(Created("Message created"))
         } yield res
       }
